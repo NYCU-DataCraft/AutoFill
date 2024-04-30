@@ -1,7 +1,9 @@
 from tkinter import Tk, Label, Entry, Button
 from tkinter import messagebox
 
-from autofill import main
+#from autofill import main
+def main():
+    pass
 
 def run_script():
     account = account_input.get()
