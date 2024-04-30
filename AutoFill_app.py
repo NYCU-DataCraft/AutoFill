@@ -111,10 +111,10 @@ class About(tk.Frame):
         label = tk.Label(self, text="關於我們", foreground="blue")
         label.grid(row=0, column=0)
 
-        logo_image = PhotoImage(file="resource/Logo.png")
-        img_label = tk.Label(self, image = logo_image)
-        img_label.place(x=200,y=0)
-        img_label.image = logo_image
+        # logo_image = PhotoImage(file="Logo.png")
+        # img_label = tk.Label(self, image = logo_image)
+        # img_label.place(x=200,y=0)
+        # img_label.image = logo_image
 
         label = tk.Label(self, text="本軟體已開源，請至\n")
         label.place(x=0,y=25)
