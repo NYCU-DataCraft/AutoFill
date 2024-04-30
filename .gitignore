@@ -1,0 +1,7 @@
+/__pycache__
+/venv
+/*.log
+/*.spec
+/resize_img.py
+/build
+/token.txt
