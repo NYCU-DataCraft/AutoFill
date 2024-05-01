@@ -23,17 +23,19 @@ def log_setup():
 
 # log_setup()
 
-def random_sleep():
-    t = random.random() * 2
-    time.sleep(t)
+def random_sleep(is_on=True):
+    if is_on:
+        t = random.random() * 2
+        time.sleep(t)
     return
 
-def random_fast_sleep():
-    t = random.random() * 0.67
-    time.sleep(t)
+def random_fast_sleep(is_on=True):
+    if is_on:
+        t = random.random() * 0.67
+        time.sleep(t)
     return
 
-def main(account, password):
+def main(account, password, mimic):
     try:
         # Driver Setup
         chrome_options = webdriver.ChromeOptions()
@@ -71,15 +73,15 @@ def main(account, password):
             pass
         
         # logging.info("Authentication complete")
-        random_sleep()
+        random_fast_sleep()
 
         driver.get('https://portal.nycu.edu.tw/#/redirect/cos')
         button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//*[@id=\"idfrmSetPreceptor\"]/table/tbody/tr[5]/td/input")))
-        random_sleep()
+        random_fast_sleep()
         button.click()
         # logging.info("Redirected to course system")
         
-        random_sleep()
+        random_fast_sleep()
         driver.get('https://course.nycu.edu.tw/TeachPoll/index.asp')
         # logging.info("Redirected to TeachPoll/index.asp")
 
@@ -104,21 +106,24 @@ def main(account, password):
             if len(radio_elements) <= 8:
                 for element in medium_elements:
                     element.click()
-                    random_fast_sleep()
+                    random_fast_sleep(mimic)
             else:
                 for element in radio_elements:
                     element.click()
-                    random_fast_sleep()
+                    random_fast_sleep(mimic)
                 for element in extra_elements[-5:-3]+[addd_elements[-3]]+[extra_elements[-2]]+[addd_elements[-1]]:
                     element.click()
-                    random_fast_sleep()
+                    random_fast_sleep(mimic)
 
             random_sleep()
             # Find and click the button with type="button", value="送出", and onclick="chkdata();"
             button_xpath = '//input[@type="button" and @value="送出" and @onclick="chkdata();"]'
-            submit_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button_xpath)))
-            submit_button.click()
-            random_fast_sleep()
+            try:
+                submit_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, button_xpath)))
+                submit_button.click()
+                random_fast_sleep()
+            except:
+                pass
 
             try:
                 link_xpath = "//a[@href='index.asp']"
