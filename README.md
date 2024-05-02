@@ -8,6 +8,7 @@
 
 ## 如何下載
 <div>
+  <code style="color:Red">請先確認電腦上有安裝Google Chrome！！！！！</code>.
   <h4> 1. 點開主頁面右方的Releases </h4> 
   <img src="images/Download_Instruction1.png" width="500">
   <br />
@@ -21,6 +22,9 @@
 ## Q&A
 ##### Q：若防毒軟件或系統阻止運行怎麼辦？
 A：由於目前只在一部分Windows系統上測試過，請先允許強制執行。
+
+##### Q：瀏覽器不讓我下載怎麼辦？
+A：可以試試看更換瀏覽器，目前測試Chrome沒問題，Edge會有警告（應該能強制執行）
 
 ##### Q：如果我想挑某些課手動填答怎麼辦？
 A：你可以先自行手動填答你想要填的問卷，之後再執行自動填答系統。
