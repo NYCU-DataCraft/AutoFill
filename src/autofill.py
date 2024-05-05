@@ -35,7 +35,7 @@ def random_fast_sleep(is_on=True):
         time.sleep(t)
     return
 
-def main(account, password, mimic):
+def main(account, password, mimic, custom_answers=None):
     try:
         # Driver Setup
         chrome_options = webdriver.ChromeOptions()
@@ -96,22 +96,47 @@ def main(account, password, mimic):
             link_xpath = '//a[contains(@onclick, "SetfrmAction") and contains(text(), "填答問卷")]'
             submit_button = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.XPATH, elements_xpath)))
             submit_button[0].click()
-            extra_elements = driver.find_elements(By.XPATH, '//input[@type="RADIO" and @value="1"]') # 8個
-            radio_elements = driver.find_elements(By.XPATH, '//input[@type="RADIO" and @value="5"]') # 3個
-            addd_elements = driver.find_elements(By.XPATH, '//input[@type="RADIO" and @value="2"]') # 8個
 
-            medium_elements = radio_elements + extra_elements[3:5] + [addd_elements[5]] + [extra_elements[6]] + [addd_elements[7]]
+            first_elements = driver.find_elements(By.XPATH, '//input[@type="RADIO" and @value="1"]') # 8個 非常不滿意 + 下五第一
+            second_elements = driver.find_elements(By.XPATH, '//input[@type="RADIO" and @value="2"]') # 8個 滿意 + 下午第二
+            third_elements = driver.find_elements(By.XPATH, '//input[@type="RADIO" and @value="3"]')
+            fourth_elements = driver.find_elements(By.XPATH, '//input[@type="RADIO" and @value="4"]')
+            fifth_elements = driver.find_elements(By.XPATH, '//input[@type="RADIO" and @value="5"]') # 3個 非常滿意
+
+            default_elements = fifth_elements + first_elements[3:5] + [second_elements[5]] + [first_elements[6]] + [second_elements[7]]
             # logging.info(medium_elements) 
-
-            if len(radio_elements) <= 8:
-                for element in medium_elements:
-                    element.click()
-                    random_fast_sleep(mimic)
+            
+            if not custom_answers:
+                if len(fifth_elements) <= 8:
+                    for element in default_elements:
+                        element.click()
+                        random_fast_sleep(mimic)
+                else:
+                    for element in fifth_elements:
+                        element.click()
+                        random_fast_sleep(mimic)
+                    for element in first_elements[-5:-3]+[second_elements[-3]]+[first_elements[-2]]+[second_elements[-1]]:
+                        element.click()
+                        random_fast_sleep(mimic)
             else:
-                for element in radio_elements:
-                    element.click()
-                    random_fast_sleep(mimic)
-                for element in extra_elements[-5:-3]+[addd_elements[-3]]+[extra_elements[-2]]+[addd_elements[-1]]:
+                custom_elements = []
+                query_table = {
+                    "five_elements": {5:fifth_elements, 4:fourth_elements[:-2], 3:third_elements[:-5], 2:second_elements[:-5], 1:first_elements[:-5]}, # 5：非常滿意
+                    "focus_level": {1:first_elements[-5], 2:second_elements[-5], 3:third_elements[-5]}, # 1：認真
+                    "attendance": {1:first_elements[-4], 2:second_elements[-4], 3:third_elements[-4], 4:fourth_elements[-2]},
+                    "study_span": {1:first_elements[-3], 2:second_elements[-3], 3:third_elements[-3]},
+                    "expectation": {1:first_elements[-2], 2:second_elements[-2], 3:third_elements[-2]},
+                    "difficulty": {1:first_elements[-1], 2:second_elements[-1], 3:third_elements[-1], 4:fourth_elements[-1]},
+                }
+
+                custom_elements += query_table["five_elements"][custom_answers[0]]
+                custom_elements += [query_table["focus_level"][custom_answers[1]]]
+                custom_elements += [query_table["attendance"][custom_answers[2]]]
+                custom_elements += [query_table["study_span"][custom_answers[3]]]
+                custom_elements += [query_table["expectation"][custom_answers[4]]]
+                custom_elements += [query_table["difficulty"][custom_answers[5]]]
+
+                for element in custom_elements:
                     element.click()
                     random_fast_sleep(mimic)
 

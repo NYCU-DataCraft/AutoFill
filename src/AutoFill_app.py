@@ -8,6 +8,7 @@ import sv_ttk
 from autofill import main
 import base64
 
+
 def nxt_line():
     i = 0
     while True:
@@ -30,7 +31,7 @@ class AutoFill(tk.Tk):
         self.frames = {}
 
         # Define and add all pages to the application
-        for F in (MainPage, Instruction, About):
+        for F in (MainPage, Instruction, About, Settings):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -48,7 +49,7 @@ class MainPage(ttk.Frame):
     def __init__(self, parent, controller):
 
         self.dark_mode = True
-        self.mimic = True
+        self.mimic = False
         nxt = nxt_line()
 
         s = ttk.Style()
@@ -61,7 +62,8 @@ class MainPage(ttk.Frame):
                 messagebox.showinfo("Warning", "請輸入帳號密碼")
                 return
 
-            end_m = main(account, password, self.mimic)
+            vbgcalv = controller.frames[Settings].setting
+            end_m = main(account, password, self.mimic, vbgcalv)
             #root.destroy()
             messagebox.showinfo("Result", end_m)
         
@@ -102,13 +104,16 @@ class MainPage(ttk.Frame):
         # Create a button to run the script
         br=next(nxt)
         br=next(nxt)
+        r = next(nxt)-15
         run_button = ttk.Button(self, text="執行自動填答", command=run_script, style='my.TButton')
-        run_button.place(x=125, y=next(nxt)-15)
+        run_button.place(x=125, y=r)
+        setting_button = ttk.Button(self, text="自訂填答選項", command=lambda: controller.show_frame(Settings), style='my.TButton')
+        setting_button.place(x=235, y=r)
 
         # Setting buttons
         dm_button = ttk.Button(self, text="夜間模式：ON", command=toggle_dark_mode, style='my.TButton')
         dm_button.place(x=350, y=5)
-        mimic_button = ttk.Button(self, text="仿人模式：ON", command=toggle_mimic, style='my.TButton')
+        mimic_button = ttk.Button(self, text="仿人模式：OFF", command=toggle_mimic, style='my.TButton')
         mimic_button.place(x=350, y=55)
 
         # Footers
@@ -129,6 +134,90 @@ class MainPage(ttk.Frame):
         button.place(x=10, y=r)
         button = ttk.Button(self, text="關於我們", command=lambda: controller.show_frame(About), style='my.TButton')
         button.place(x=100, y=r)
+
+class Settings(ttk.Frame):
+    def __init__(self, parent, controller):
+        r = 10
+        ttk.Frame.__init__(self, parent)
+
+        self.setting = None
+
+        def show():
+            a = ""
+            ca_buffer = []
+            for i in (five_elements, focus_level, attendance, study_span, expectation, difficulty):
+                a += f'{i.current()}:{i.get()}\n'
+                ca_buffer.append(i.current()+1)
+            if any(num <= 0 for num in ca_buffer):
+                self.setting = None
+                title_label.config(text="自訂填答選項 | 目前：預設(Default)")
+                messagebox.showinfo("result", "不合理的設定，請選填每個選項")
+            else:
+                self.setting = ca_buffer.copy()
+                title_label.config(text="自訂填答選項 | 目前：自訂(Custom)")
+                messagebox.showinfo("result", a)    # 顯示索引值與內容
+            print(self.setting)
+
+        label = ttk.Label(self, text="預設：非常滿意、認真、從不缺課\n3-5小時、前1/3、適中", font=('微軟正黑體', 9), foreground="red")
+        label.place(x=290, y=10)
+
+        title_label = ttk.Label(self, text="自訂填答選項 | 目前：預設(Default)", font=('微軟正黑體', 13, "underline"))
+        title_label.place(x=10, y=r)
+        r+=30
+        label = ttk.Label(self, text="教學反應問項", font=('微軟正黑體', 11))
+        label.place(x=200, y=r+8)
+        five_elements = ttk.Combobox(self,
+                    width=15,
+                    values=['非常不同意','不同意','普通','同意','非常同意'],
+                    state="readonly")
+        five_elements.place(x=10, y=r)
+        r+=45
+        label = ttk.Label(self, text="我對這門課的態度", font=('微軟正黑體', 11))
+        label.place(x=200, y=r+8)
+        focus_level = ttk.Combobox(self,
+                    width=15,
+                    values=['認真','一般','不認真'],
+                    state="readonly")
+        focus_level.place(x=10, y=r)
+        r+=45
+        label = ttk.Label(self, text="我的缺席狀況", font=('微軟正黑體', 11))
+        label.place(x=200, y=r+8)
+        attendance = ttk.Combobox(self,
+                    width=15,
+                    values=['從不缺課','極少(三次以下)','偶而','常常缺課(超過1/3)'],
+                    state="readonly")
+        attendance.place(x=10, y=r)
+        r+=45
+        label = ttk.Label(self, text="我每週平均自習本實驗課程的時數約為", font=('微軟正黑體', 11))
+        label.place(x=200, y=r+8)
+        study_span = ttk.Combobox(self,
+                    width=15,
+                    values=['0~2小時','3~5小時','6小時以上'],
+                    state="readonly")
+        study_span.place(x=10, y=r)
+        r+=45
+        label = ttk.Label(self, text="預期學期結束時，我在本課程的成績", font=('微軟正黑體', 11))
+        label.place(x=200, y=r+8)
+        expectation = ttk.Combobox(self,
+                    width=15,
+                    values=['前1/3','中1/3','後1/3'],
+                    state="readonly")
+        expectation.place(x=10, y=r)
+        r+=45
+        label = ttk.Label(self, text="本實驗課程之難易度如何", font=('微軟正黑體', 11))
+        label.place(x=200, y=r+8)
+        difficulty = ttk.Combobox(self,
+                    width=15,
+                    values=['艱深','適中','過淺','無法判斷'],
+                    state="readonly")
+        difficulty.place(x=10, y=r)
+        r+=45
+        # Button to navigate back to StartPage
+        button = ttk.Button(self, text="回到主頁", command=lambda: controller.show_frame(MainPage))
+        button.place(x=200, y=r)
+        # Button to navigate back to StartPage
+        button = ttk.Button(self, text="儲存並顯示目前設定", command=show)
+        button.place(x=10, y=r)
 
 class Instruction(ttk.Frame):
     def __init__(self, parent, controller):
@@ -179,9 +268,11 @@ class About(ttk.Frame):
         label = ttk.Label(self, text="開發團隊：Datacraft", font=('微軟正黑體', 11))
         label.place(x=10,y=70)
         label = ttk.Label(self, text="信箱：realdatacraft@gmail.com", font=('微軟正黑體', 11))
-        label.place(x=10,y=100)
+        label.place(x=10,y=160)
         label = ttk.Label(self, text="IG：real_datacraft", font=('微軟正黑體', 11))
         label.place(x=10,y=130)
+        label = ttk.Label(self, text="開發人員名單：Tu32、Muennl", font=('微軟正黑體', 11))
+        label.place(x=10,y=100)
 
         # Button to navigate back to StartPage
         button = ttk.Button(self, text="回到主頁", command=lambda: controller.show_frame(MainPage))
