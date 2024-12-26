@@ -8,7 +8,7 @@
 
 ## 如何下載
 <div>
-  <code style="color:Red">請先確認電腦上有安裝Google Chrome！！！！！</code>.
+  <code style="color:Red">本軟體只適用Windows系統</code>.
   <h4> 1. 點開主頁面右方的Releases </h4> 
   <img src="images/Download_Instruction1.png" width="500">
   <br />
